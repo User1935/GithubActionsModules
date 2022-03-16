@@ -1,0 +1,26 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks.git
+  rev: v4.1.0
+  hooks:
+    - id: mixed-line-ending
+      args: [ --fix=lf ]
+    - id: trailing-whitespace
+      args: [ --markdown-linebreak-ext=* ]
+    - id: check-yaml
+      args: [ --allow-multiple-documents ]
+    - id: check-json
+    - id: check-merge-conflict
+    #- id: detect-aws-credentials
+    - id: double-quote-string-fixer
+    - id: end-of-file-fixer
+
+- repo: git://github.com/antonbabenko/pre-commit-terraform
+  rev: v1.64.0 # Get the latest from: https://github.com/antonbabenko/pre-commit-terraform/releases
+  hooks:
+    - id: terraform_fmt
+    - id: terraform_docs
+    - id: terrascan
+    - id: terraform_tflint
+    - id: terraform_tfsec
+    - id: checkov
+
