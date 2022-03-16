@@ -10,7 +10,7 @@ jobs:
 
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-      SHA1: 
+      SHA1: "bananas"
     steps:
       - uses: actions/checkout@v2
       - name: Check changed files
