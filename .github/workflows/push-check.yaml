@@ -10,7 +10,7 @@ jobs:
 
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-
+      SHA1: 
     steps:
       - uses: actions/checkout@v2
       - name: Check changed files
@@ -22,14 +22,17 @@ jobs:
             git fetch origin $GITHUB_BASE_REF --depth=1
             export DIFF=$( git diff --name-only origin/$GITHUB_BASE_REF $GITHUB_SHA )
             echo "Diff between origin/$GITHUB_BASE_REF and $GITHUB_SHA"
+            echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
           else
             # Push
             git fetch origin ${{ github.event.before }} --depth=1
             export DIFF=$( git diff --name-only ${{ github.event.before }} $GITHUB_SHA )
             echo "Diff between ${{ github.event.before }} and $GITHUB_SHA"
+            echo "::set-output name=diff::${{ github.event.before }}"
           fi
           echo BASEREF: $GITHUB_BASE_REF
-          
+          echo Name status: $( git diff --name-status ${{ github.event.before }} $GITHUB_SHA )
+          echo ----
           echo "$DIFF"
           # Escape newlines (replace \n with %0A)
           echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
