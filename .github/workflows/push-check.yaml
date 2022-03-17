@@ -10,7 +10,7 @@ jobs:
 
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-      SHA1: "bananas"
+      BASE_SHA: ${{ steps.diff.outputs.sha }}
     steps:
       - name: 'not working'
         run: echo $(cat touchy3)
@@ -25,6 +25,7 @@ jobs:
             export DIFF=$( git diff --name-only origin/$GITHUB_BASE_REF $GITHUB_SHA )
             export DIFF1=$( git diff --name-state origin/$GITHUB_BASE_REF $GITHUB_SHA )
             echo "Diff between origin/$GITHUB_BASE_REF and $GITHUB_SHA"
+            echo "::set-output name=sha::$GITHUB_BASE_REF"
             echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
           else
             # Push
@@ -32,6 +33,7 @@ jobs:
             export DIFF=$( git diff --name-only ${{ github.event.before }} $GITHUB_SHA )
             export DIFF1=$( git diff --name-state ${{ github.event.before }} $GITHUB_SHA )
             echo "Diff between ${{ github.event.before }} and $GITHUB_SHA"
+            echo "::set-output name=sha::${{ github.event.before }}"
             echo "::set-output name=diff::${{ github.event.before }}"
           fi
           echo BASEREF: $GITHUB_BASE_REF
@@ -81,15 +83,58 @@ jobs:
           # Set output
           echo "::set-output name=matrix::$( echo "$JSON" )"
 
-  build:
-    name: Build "${{ matrix.directory }}" on ${{ matrix.os }}
+  plan:
+    name: All the resource plannings
     needs: generate-matrix
     strategy:
       matrix: ${{fromJson(needs.generate-matrix.outputs.matrix)}}
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Build
+      - name: Checkout
+        uses: actions/checkout@v2
+
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_wrapper: false
+
+      - name: Setup Terragrunt
+        uses: autero1/action-terragrunt@v1.1.0
+        with:
+          terragrunt_version: 0.35.9
+
+        
+      - name: Run TerraGrunt
         run: |
-          cd ${{ matrix.directory }}
-          echo "${{ matrix.directory }} ${{ matrix.os }}"
+          echo terragrunt plan --working-diectory ${{ matrix.path }}
+          
+  destroy:
+    name: All the destroy plannings
+    needs: generate-matrix
+    strategy:
+      matrix: ${{fromJson(needs.generate-matrix.outputs.matrix)}}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.generate-matrix.outputs.sha }}
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_wrapper: false
+
+      - name: Setup Terragrunt
+        uses: autero1/action-terragrunt@v1.1.0
+        with:
+          terragrunt_version: 0.35.9
+
+      - name: Run TerraGrunt
+        run: |
+          echo terragrunt plan -destroy --working-diectory ${{ matrix.path }}
+
+      
+          
