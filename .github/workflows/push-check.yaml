@@ -13,7 +13,7 @@ jobs:
       SHA1: "bananas"
     steps:
       - name: 'not working'
-        run: echo touchy3
+        run: echo $(touchy3)
       - uses: actions/checkout@v2
       - name: Check changed files
         id: diff
