@@ -8587,7 +8587,7 @@ function getSha() {
 async function run() {
   try {
     let buff = new Buffer.from(core.getInput("body"), 'base64');
-    let data = buff.toString('utf8');
+    let data = "Hello Wolrd!" //buff.toString('utf8');
     const inputs = {
       token: core.getInput("token"),
       repository: core.getInput("repository"),
