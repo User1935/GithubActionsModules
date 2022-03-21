@@ -1,4 +1,4 @@
-name: Build
+name: 'Format-Terraform'
 on: [push, pull_request]
 
 
