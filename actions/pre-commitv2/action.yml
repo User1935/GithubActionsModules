@@ -1,0 +1,23 @@
+name: "Pre-commit"
+description: 'Runs antonbabenkos pre-commit'
+author:  'User1935'
+inputs:
+  INFRACOST_API_KEY:
+    description: 'API_KEY.'
+    required: false
+  IS_PUSH:
+    description: 'Is is a push of a pull.'
+    required: false
+    default: 'false'
+
+
+outputs:
+  filecontent:
+    description: 'Content of Pre-Commit'
+
+
+
+runs:
+  using: 'docker'
+  image: './Dockerfile'
+
