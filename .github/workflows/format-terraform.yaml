@@ -13,8 +13,10 @@ jobs:
       - name: 'Pre-Commit'
         id: 'pre-commit'
         continue-on-error: true
-        uses: ./actions/pre-commit
-      
+        #uses: ./actions/pre-commit
+        run: |
+          sudo brew install pre-commit
+          pre-commit run --all-files
       - name: Create a File with something
         id: file
         run: |
