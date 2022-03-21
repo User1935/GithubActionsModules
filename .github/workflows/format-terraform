@@ -1,0 +1,38 @@
+name: Build
+on: [push, pull_request]
+
+
+jobs:
+  pre-commit:
+    name: 'Pre-Commit'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@master
+
+      - name: 'Pre-Commit'
+        id: 'pre-commit'
+        continue-on-error: true
+        uses: ./actions/pre-commit
+      
+      - name: Create a File with something
+        id: file
+        run: |
+          echo "::debug:: File-Content: ${{ steps.pre-commit.outputs.filecontent }}"
+          sudo apt-get install colorized-logs
+          echo "::debug:: Pushing to file"
+          echo " ${{ steps.pre-commit.outputs.filecontent }}" > temp1.raw
+          echo "::debug:: Decoding Base64 $(cat temp1.raw)"
+          base64 -di temp1.raw > temp.raw
+          echo "::debug:: Converting to HTML"
+          ansi2html < temp.raw | base64 > temp.html
+          echo "::debug:: Setting Output"
+          echo ::set-output name=html:: $(cat temp.html)
+
+      - name: Comment-push
+        if: github.event_name != 'pull_request'
+        uses: ./actions/commit-comment  #'peter-evans/commit-comment@v1'
+        with:
+          body: ${{ steps.pre-commit.outputs.filecontent }} #${{ steps.file.outputs.html }}  #${{ steps.pre-commit.outputs.filecontent }} #${{ steps.to-markdown.outputs.markdown }}
+
+      
