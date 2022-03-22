@@ -12,6 +12,13 @@ function main {
   echo ::set-output name=filecontent::$(cat b64encfile.md)
   echo ::debug::$(pwd)
   #echo ::set-output name=filecontent::$(cat comment_pre-commit.md)
+  
+  ## Set git users to the commit we are building from
+  git config user.name "$(git --no-pager log --format=format:'%an' -n 1)"
+  git config user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
+  git add .
+  git commit -m "$INPUT_COMMIT"
+  git push "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$INPUT_REPO.git"
 }
 
 main "${*}"
