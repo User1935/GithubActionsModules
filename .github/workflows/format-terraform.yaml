@@ -13,7 +13,7 @@ jobs:
       - name: 'Pre-Commit'
         id: 'pre-commit'
         continue-on-error: true
-        uses: ./actions/pre-commitv2
+        uses: ./actions/pre-commit
         #run: |
         #  sudo brew install pre-commit
         #  pre-commit run --all-files
