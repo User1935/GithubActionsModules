@@ -44,7 +44,7 @@ jobs:
           # Escape newlines (replace \n with %0A)
           echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
           echo "::set-output name=diff1::$( echo "$DIFF1" | sed ':a;N;$!ba;s/\n/%0A/g' )"
-          
+
       - name: Set matrix for build
         id: set-matrix
         run: |
@@ -64,7 +64,7 @@ jobs:
                     final=${JSONline//\// }
                     finalarray=($final)
                     if [ "${finalarray[-1]}" == 'terragrunt.hcl' ] && [ ${#finalarray[@]} -gt 1 ]; then
-                            
+
                             unset finalarray[-1]
                             path=$(echo ${finalarray[@]} | sed -r 's/ +/\//g')
                             if [[ "$JSON" != *$path* ]]; then
@@ -76,7 +76,7 @@ jobs:
                     final=${JSONline//\// }
                     finalarray=($final)
                     if [ "${finalarray[-1]}" == 'terragrunt.hcl' ] && [ ${#finalarray[@]} -gt 1 ]; then
-                            
+
                             unset finalarray[-1]
                             path=$(echo ${finalarray[@]} | sed -r 's/ +/\//g')
                             if [[ "$JSONCREATE" != *$path* ]]; then
@@ -97,7 +97,7 @@ jobs:
             JSONCREATE="${JSONCREATE%?}"
           fi
           JSONCREATE="$JSONCREATE]}"
-          
+
 
           # Set output
           echo "::set-output name=matrix::$( echo "$JSON" )"
@@ -124,11 +124,11 @@ jobs:
         with:
           terragrunt_version: 0.35.9
 
-        
+
       - name: Run TerraGrunt
         run: |
           echo terragrunt plan --working-directory ${{ matrix.path }}
-          
+
   destroy:
     name: All the destroy plannings
     needs: generate-matrix
@@ -155,6 +155,3 @@ jobs:
       - name: Run TerraGrunt
         run: |
           echo terragrunt plan -destroy --working-directory ${{ matrix.path }}
-
-      
-          
