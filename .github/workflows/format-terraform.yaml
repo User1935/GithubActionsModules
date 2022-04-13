@@ -1,5 +1,8 @@
 name: 'Format-Terraform'
-on: [push, pull_request]
+on: 
+  push:
+    branches:
+      - 'Feature/pipelines'
 
 
 jobs:
@@ -13,10 +16,8 @@ jobs:
       - name: 'Pre-Commit'
         id: 'pre-commit'
         continue-on-error: true
-        uses: ./actions/pre-commit
-        #run: |
-        #  sudo brew install pre-commit
-        #  pre-commit run --all-files
+        uses: ./.github/actions/pre-commit
+
       - name: Create a File with something
         id: file
         run: |
@@ -33,6 +34,6 @@ jobs:
 
       - name: Comment-push
         if: github.event_name != 'pull_request'
-        uses: ./actions/commit-comment  #'peter-evans/commit-comment@v1'
+        uses: ./.github/actions/commit-comment  #'peter-evans/commit-comment@v1'
         with:
           body: ${{ steps.pre-commit.outputs.filecontent }} #${{ steps.file.outputs.html }}  #${{ steps.pre-commit.outputs.filecontent }} #${{ steps.to-markdown.outputs.markdown }}
